@@ -1,0 +1,26 @@
+services:
+  # Backend API Service
+  - type: web
+    name: eventsnap-backend
+    env: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: JWT_SECRET
+        generateValue: true
+      - key: MONGODB_URI
+        sync: false # User will provide their MongoDB Atlas URL
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false # User will provide Cloudinary Cloud Name
+      - key: CLOUDINARY_API_KEY
+        sync: false # User will provide Cloudinary API Key
+      - key: CLOUDINARY_API_SECRET
+        sync: false # User will provide Cloudinary API Secret
+      - key: FRONTEND_URL
+        sync: false # User will provide Vercel/Netlify frontend URL
