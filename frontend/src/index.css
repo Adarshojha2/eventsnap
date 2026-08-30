@@ -1,0 +1,427 @@
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'react-toastify/dist/ReactToastify.css';
+import 'yet-another-react-lightbox/styles.css';
+
+/* ============================================
+   EventSnap — Global Design System
+   ============================================ */
+
+:root {
+  --es-primary: #6C63FF;
+  --es-primary-dark: #5849e8;
+  --es-primary-light: #8b85ff;
+  --es-secondary: #FF6584;
+  --es-accent: #00D4AA;
+  --es-dark: #1a1a2e;
+  --es-dark-2: #16213e;
+  --es-dark-3: #0f3460;
+  --es-light-bg: #f8f9ff;
+  --es-card-bg: #ffffff;
+  --es-text: #2d2d2d;
+  --es-text-muted: #6c757d;
+  --es-border: #e8e8f0;
+  --es-shadow: 0 4px 24px rgba(108, 99, 255, 0.08);
+  --es-shadow-hover: 0 8px 40px rgba(108, 99, 255, 0.18);
+  --es-radius: 16px;
+  --es-radius-sm: 10px;
+  --es-radius-lg: 24px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--es-light-bg);
+  color: var(--es-text);
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--es-primary); border-radius: 3px; }
+
+/* ============================================
+   TYPOGRAPHY
+   ============================================ */
+h1, h2, h3, h4, h5, h6 { font-weight: 700; letter-spacing: -0.02em; }
+.es-headline { font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 900; letter-spacing: -0.03em; line-height: 1.1; }
+.es-subheadline { font-size: clamp(1rem, 2vw, 1.3rem); color: rgba(255,255,255,0.85); font-weight: 400; line-height: 1.6; }
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+.btn-es-primary {
+  background: linear-gradient(135deg, var(--es-primary), var(--es-primary-dark));
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 12px 32px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 15px rgba(108, 99, 255, 0.35);
+}
+.btn-es-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(108, 99, 255, 0.5);
+  color: white;
+  background: linear-gradient(135deg, var(--es-primary-light), var(--es-primary));
+}
+.btn-es-outline {
+  background: transparent;
+  color: white;
+  border: 2px solid rgba(255,255,255,0.6);
+  border-radius: 50px;
+  padding: 11px 32px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.25s ease;
+  backdrop-filter: blur(10px);
+}
+.btn-es-outline:hover {
+  background: rgba(255,255,255,0.15);
+  border-color: white;
+  color: white;
+  transform: translateY(-2px);
+}
+
+/* ============================================
+   CARDS
+   ============================================ */
+.es-card {
+  background: var(--es-card-bg);
+  border-radius: var(--es-radius);
+  box-shadow: var(--es-shadow);
+  border: 1px solid var(--es-border);
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+.es-card:hover {
+  box-shadow: var(--es-shadow-hover);
+  transform: translateY(-4px);
+}
+.es-card-flat {
+  background: var(--es-card-bg);
+  border-radius: var(--es-radius);
+  border: 1px solid var(--es-border);
+  overflow: hidden;
+}
+
+/* ============================================
+   GRADIENTS
+   ============================================ */
+.es-gradient-hero {
+  background: linear-gradient(135deg, var(--es-dark) 0%, var(--es-dark-3) 50%, #4a0080 100%);
+}
+.es-gradient-primary {
+  background: linear-gradient(135deg, var(--es-primary), var(--es-secondary));
+}
+.es-gradient-accent {
+  background: linear-gradient(135deg, var(--es-accent), var(--es-primary));
+}
+.es-gradient-text {
+  background: linear-gradient(135deg, var(--es-primary), var(--es-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ============================================
+   LOADING SKELETON
+   ============================================ */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+
+/* ============================================
+   GALLERY GRID
+   ============================================ */
+.gallery-masonry {
+  display: flex;
+  gap: 12px;
+}
+.gallery-masonry-column {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+}
+.gallery-item {
+  position: relative;
+  border-radius: var(--es-radius-sm);
+  overflow: hidden;
+  cursor: pointer;
+  background: #f0f0f0;
+}
+.gallery-item img {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: transform 0.4s ease;
+}
+.gallery-item:hover img { transform: scale(1.05); }
+.gallery-item-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  display: flex;
+  align-items: flex-end;
+  padding: 12px;
+  gap: 8px;
+}
+.gallery-item:hover .gallery-item-overlay { opacity: 1; }
+.gallery-item.guest-upload::after {
+  content: '👤';
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0,0,0,0.6);
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+/* ============================================
+   UPLOAD ZONE
+   ============================================ */
+.dropzone {
+  border: 2px dashed var(--es-border);
+  border-radius: var(--es-radius);
+  padding: 48px 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: var(--es-light-bg);
+}
+.dropzone:hover, .dropzone.active {
+  border-color: var(--es-primary);
+  background: rgba(108, 99, 255, 0.04);
+}
+.dropzone.active { border-style: solid; }
+
+/* ============================================
+   PROGRESS BAR
+   ============================================ */
+.upload-progress-bar {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--es-border);
+  overflow: hidden;
+}
+.upload-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--es-primary), var(--es-accent));
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+/* ============================================
+   EVENT TYPE BADGES
+   ============================================ */
+.badge-wedding { background: linear-gradient(135deg, #ff6b9d, #c44dff); }
+.badge-birthday { background: linear-gradient(135deg, #f7971e, #ffd200); color: #333 !important; }
+.badge-corporate { background: linear-gradient(135deg, #2193b0, #6dd5ed); }
+.badge-trip { background: linear-gradient(135deg, #56ab2f, #a8e063); color: #333 !important; }
+.badge-puja { background: linear-gradient(135deg, #f7971e, #ff4e50); }
+.badge-other { background: linear-gradient(135deg, #606c88, #3f4c6b); }
+
+/* ============================================
+   QR POSTER
+   ============================================ */
+.qr-poster {
+  background: white;
+  border-radius: 24px;
+  padding: 40px 32px;
+  text-align: center;
+  max-width: 360px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+}
+.qr-poster-header {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--es-primary);
+  margin-bottom: 8px;
+}
+.qr-poster-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--es-dark);
+  margin-bottom: 4px;
+}
+.qr-poster-qr {
+  margin: 24px 0;
+  display: flex;
+  justify-content: center;
+}
+.qr-poster-footer {
+  font-size: 12px;
+  color: var(--es-text-muted);
+  margin-top: 16px;
+}
+
+/* ============================================
+   NAVBAR
+   ============================================ */
+.es-navbar {
+  backdrop-filter: blur(20px);
+  background: rgba(255,255,255,0.95);
+  border-bottom: 1px solid var(--es-border);
+  transition: all 0.3s ease;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+.es-navbar-brand {
+  font-weight: 800;
+  font-size: 1.4rem;
+  color: var(--es-dark);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+.es-navbar-brand span { color: var(--es-primary); }
+
+/* ============================================
+   DASHBOARD SIDEBAR
+   ============================================ */
+.es-sidebar {
+  width: 260px;
+  min-height: 100vh;
+  background: white;
+  border-right: 1px solid var(--es-border);
+  padding: 24px 16px;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+}
+.es-sidebar-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: var(--es-radius-sm);
+  color: var(--es-text-muted);
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  margin-bottom: 4px;
+}
+.es-sidebar-nav-item:hover {
+  background: rgba(108, 99, 255, 0.08);
+  color: var(--es-primary);
+}
+.es-sidebar-nav-item.active {
+  background: rgba(108, 99, 255, 0.12);
+  color: var(--es-primary);
+  font-weight: 600;
+}
+.es-main-content {
+  margin-left: 260px;
+  min-height: 100vh;
+  padding: 32px;
+}
+
+/* ============================================
+   STAT CARDS
+   ============================================ */
+.es-stat-card {
+  background: white;
+  border-radius: var(--es-radius);
+  padding: 24px;
+  border: 1px solid var(--es-border);
+  box-shadow: var(--es-shadow);
+}
+.es-stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.es-stat-number {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--es-dark);
+  line-height: 1;
+}
+.es-stat-label {
+  font-size: 0.85rem;
+  color: var(--es-text-muted);
+  font-weight: 500;
+}
+
+/* ============================================
+   GUEST EVENT PAGE
+   ============================================ */
+.guest-hero {
+  min-height: 50vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 48px 24px;
+}
+.guest-event-title {
+  font-size: clamp(1.8rem, 5vw, 3rem);
+  font-weight: 900;
+  color: white;
+}
+
+/* ============================================
+   SECTION PADDING
+   ============================================ */
+.es-section { padding: 80px 0; }
+.es-section-sm { padding: 48px 0; }
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  .es-sidebar { display: none; }
+  .es-main-content { margin-left: 0; padding: 16px; }
+  .es-section { padding: 48px 0; }
+  .gallery-masonry { gap: 8px; }
+}
+
+/* ============================================
+   MISC UTILITIES
+   ============================================ */
+.es-divider { height: 1px; background: var(--es-border); margin: 24px 0; }
+.hover-lift { transition: transform 0.3s ease; }
+.hover-lift:hover { transform: translateY(-4px); }
+.text-es-primary { color: var(--es-primary) !important; }
+.bg-es-primary { background-color: var(--es-primary) !important; }
+.bg-es-dark { background-color: var(--es-dark) !important; }
+.rounded-es { border-radius: var(--es-radius) !important; }
+.shadow-es { box-shadow: var(--es-shadow) !important; }
+.empty-state { text-align: center; padding: 64px 24px; }
+.empty-state-icon { font-size: 3rem; margin-bottom: 16px; opacity: 0.4; }

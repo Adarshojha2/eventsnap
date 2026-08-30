@@ -1,0 +1,139 @@
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
+import { Camera, Eye, EyeOff, Mail, Lock, LogIn } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
+
+const Login = () => {
+  const { login } = useAuth();
+  const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const { register, handleSubmit, formState: { errors }, setValue } = useForm();
+
+  const onSubmit = async (data) => {
+    setLoading(true);
+    try {
+      await login(data.email, data.password);
+      toast.success('Welcome back! 👋');
+      navigate('/dashboard');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Login failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fillDemo = (role) => {
+    const demos = {
+      admin: { email: 'admin@eventsnap.com', password: 'password123' },
+      user: { email: 'demo@eventsnap.com', password: 'password123' },
+    };
+    setValue('email', demos[role].email);
+    setValue('password', demos[role].password);
+  };
+
+  return (
+    <div style={{ minHeight: '100vh', display: 'flex' }}>
+      {/* Left: Form */}
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 24px', background: 'white' }}>
+        <div style={{ width: '100%', maxWidth: 420 }}>
+          <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none', marginBottom: 40 }}>
+            <Camera size={28} color="#6C63FF" />
+            <span style={{ fontWeight: 800, fontSize: '1.4rem', color: '#1a1a2e' }}>Event<span style={{ color: '#6C63FF' }}>Snap</span></span>
+          </Link>
+
+          <h2 style={{ fontWeight: 800, color: '#1a1a2e', marginBottom: 8 }}>Welcome back 👋</h2>
+          <p style={{ color: '#6c757d', marginBottom: 32, fontSize: '0.95rem' }}>Sign in to manage your events and photos.</p>
+
+          {/* Demo credentials */}
+          <div style={{ background: '#f8f9ff', borderRadius: 12, padding: 16, marginBottom: 24, border: '1px solid #e8e8f0' }}>
+            <div style={{ fontSize: '0.8rem', fontWeight: 600, color: '#6c757d', marginBottom: 10 }}>🧪 Quick Demo Fill:</div>
+            <div className="d-flex gap-2">
+              <button onClick={() => fillDemo('user')} className="btn btn-sm" style={{ background: 'rgba(108,99,255,0.1)', color: '#6C63FF', borderRadius: 8, fontWeight: 600, fontSize: '0.78rem' }}>
+                User Demo
+              </button>
+              <button onClick={() => fillDemo('admin')} className="btn btn-sm" style={{ background: 'rgba(255,101,132,0.1)', color: '#FF6584', borderRadius: 8, fontWeight: 600, fontSize: '0.78rem' }}>
+                Admin Demo
+              </button>
+            </div>
+          </div>
+
+          <form onSubmit={handleSubmit(onSubmit)}>
+            {/* Email */}
+            <div className="mb-3">
+              <label style={{ fontWeight: 600, fontSize: '0.875rem', color: '#1a1a2e', marginBottom: 6, display: 'block' }}>Email address</label>
+              <div style={{ position: 'relative' }}>
+                <Mail size={16} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#adb5bd' }} />
+                <input
+                  type="email"
+                  placeholder="you@example.com"
+                  className={`form-control ${errors.email ? 'is-invalid' : ''}`}
+                  style={{ paddingLeft: 40, borderRadius: 10, border: '1.5px solid #e8e8f0', height: 46 }}
+                  {...register('email', { required: 'Email is required', pattern: { value: /^\S+@\S+\.\S+$/, message: 'Invalid email' } })}
+                />
+              </div>
+              {errors.email && <div className="invalid-feedback d-block">{errors.email.message}</div>}
+            </div>
+
+            {/* Password */}
+            <div className="mb-4">
+              <label style={{ fontWeight: 600, fontSize: '0.875rem', color: '#1a1a2e', marginBottom: 6, display: 'block' }}>Password</label>
+              <div style={{ position: 'relative' }}>
+                <Lock size={16} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#adb5bd' }} />
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="••••••••"
+                  className={`form-control ${errors.password ? 'is-invalid' : ''}`}
+                  style={{ paddingLeft: 40, paddingRight: 40, borderRadius: 10, border: '1.5px solid #e8e8f0', height: 46 }}
+                  {...register('password', { required: 'Password is required' })}
+                />
+                <button type="button" onClick={() => setShowPassword(!showPassword)} style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                  {showPassword ? <EyeOff size={16} color="#adb5bd" /> : <Eye size={16} color="#adb5bd" />}
+                </button>
+              </div>
+              {errors.password && <div className="invalid-feedback d-block">{errors.password.message}</div>}
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn w-100 d-flex align-items-center justify-content-center gap-2"
+              style={{ background: loading ? '#adb5bd' : 'linear-gradient(135deg, #6C63FF, #5849e8)', color: 'white', border: 'none', borderRadius: 10, height: 48, fontWeight: 700, fontSize: '1rem', transition: 'all 0.2s' }}
+            >
+              {loading ? (
+                <><div className="spinner-border spinner-border-sm" role="status" /><span>Signing in...</span></>
+              ) : (
+                <><LogIn size={18} /> Sign In</>
+              )}
+            </button>
+          </form>
+
+          <div className="text-center mt-4" style={{ color: '#6c757d', fontSize: '0.9rem' }}>
+            Don't have an account?{' '}
+            <Link to="/register" style={{ color: '#6C63FF', fontWeight: 600, textDecoration: 'none' }}>Create one free</Link>
+          </div>
+        </div>
+      </div>
+
+      {/* Right: Gradient Visual */}
+      <div className="d-none d-lg-flex es-gradient-hero" style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 60, flexDirection: 'column', textAlign: 'center' }}>
+        <div style={{ fontSize: 80, marginBottom: 24 }}>📸</div>
+        <h2 style={{ color: 'white', fontWeight: 800, fontSize: '2rem', marginBottom: 16 }}>One QR.<br />Every Memory.</h2>
+        <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: '1rem', maxWidth: 320, lineHeight: 1.7 }}>
+          Share event photos with everyone instantly. Guests scan QR, view gallery, download and upload — no app needed.
+        </p>
+        <div className="d-flex gap-3 mt-4 flex-wrap justify-content-center">
+          {['💍 Weddings', '🎂 Birthdays', '🎓 College', '🏢 Corporate'].map((t) => (
+            <span key={t} style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)', borderRadius: 50, padding: '6px 16px', color: 'white', fontSize: '0.85rem', fontWeight: 500 }}>
+              {t}
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Login;
