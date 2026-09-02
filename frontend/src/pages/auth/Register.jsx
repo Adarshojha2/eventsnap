@@ -6,16 +6,29 @@ import { Camera, User, Mail, Lock, UserPlus } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 const Register = () => {
-  const { register: registerAuth } = useAuth();
+  const { register: registerAuth, verifyOtp } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [otpStep, setOtpStep] = useState(false);
+  const [otp, setOtp] = useState('');
+  const [otpEmail, setOtpEmail] = useState('');
   const { register, handleSubmit, watch, formState: { errors } } = useForm();
   const password = watch('password');
 
   const onSubmit = async (data) => {
     setLoading(true);
     try {
-      await registerAuth(data.name, data.email, data.password);
+      if (otpStep) {
+        await verifyOtp(otpEmail, otp, 'register');
+      } else {
+        const result = await registerAuth(data.name, data.email, data.password);
+        if (result.requiresOtp) {
+          setOtpEmail(result.email);
+          setOtpStep(true);
+          toast.success('Verification code sent to your email.');
+          return;
+        }
+      }
       toast.success('Account created! Welcome to EventSnap 🎉');
       navigate('/dashboard');
     } catch (err) {
@@ -39,6 +52,8 @@ const Register = () => {
           <p style={{ color: '#6c757d', marginBottom: 32, fontSize: '0.95rem' }}>Create an account to host your events and share photos.</p>
 
           <form onSubmit={handleSubmit(onSubmit)}>
+            {otpStep && <div className="alert alert-info">Enter the 6-digit code sent to <strong>{otpEmail}</strong>.</div>}
+            {!otpStep && <>
             {/* Name */}
             <div className="mb-3">
               <label style={{ fontWeight: 600, fontSize: '0.875rem', color: '#1a1a2e', marginBottom: 6, display: 'block' }}>Full Name</label>
@@ -101,7 +116,12 @@ const Register = () => {
                 />
               </div>
               {errors.confirmPassword && <div className="invalid-feedback d-block">{errors.confirmPassword.message}</div>}
-            </div>
+            </div></>}
+
+            {otpStep && <div className="mb-4">
+              <label style={{ fontWeight: 600, fontSize: '0.875rem', color: '#1a1a2e', marginBottom: 6, display: 'block' }}>Verification code</label>
+              <input type="text" inputMode="numeric" maxLength={6} value={otp} onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))} placeholder="6-digit code" className="form-control" style={{ borderRadius: 10, border: '1.5px solid #e8e8f0', height: 46, letterSpacing: 4 }} required />
+            </div>}
 
             <button
               type="submit"
@@ -112,7 +132,7 @@ const Register = () => {
               {loading ? (
                 <><div className="spinner-border spinner-border-sm" role="status" /><span>Creating account...</span></>
               ) : (
-                <><UserPlus size={18} /> Register</>
+                <><UserPlus size={18} /> {otpStep ? 'Verify email' : 'Register'}</>
               )}
             </button>
           </form>

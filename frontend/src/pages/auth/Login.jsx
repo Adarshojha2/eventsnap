@@ -6,16 +6,29 @@ import { Camera, Eye, EyeOff, Mail, Lock, LogIn } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 const Login = () => {
-  const { login } = useAuth();
+  const { login, verifyOtp } = useAuth();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [otpStep, setOtpStep] = useState(false);
+  const [otp, setOtp] = useState('');
+  const [otpEmail, setOtpEmail] = useState('');
   const { register, handleSubmit, formState: { errors }, setValue } = useForm();
 
   const onSubmit = async (data) => {
     setLoading(true);
     try {
-      await login(data.email, data.password);
+      if (otpStep) {
+        await verifyOtp(otpEmail, otp, 'login');
+      } else {
+        const result = await login(data.email, data.password);
+        if (result.requiresOtp) {
+          setOtpEmail(result.email);
+          setOtpStep(true);
+          toast.success('Verification code sent to your email.');
+          return;
+        }
+      }
       toast.success('Welcome back! 👋');
       navigate('/dashboard');
     } catch (err) {
@@ -77,8 +90,8 @@ const Login = () => {
               {errors.email && <div className="invalid-feedback d-block">{errors.email.message}</div>}
             </div>
 
-            {/* Password */}
-            <div className="mb-4">
+            {/* Password or email verification code */}
+            {!otpStep ? <div className="mb-4">
               <label style={{ fontWeight: 600, fontSize: '0.875rem', color: '#1a1a2e', marginBottom: 6, display: 'block' }}>Password</label>
               <div style={{ position: 'relative' }}>
                 <Lock size={16} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#adb5bd' }} />
@@ -94,7 +107,11 @@ const Login = () => {
                 </button>
               </div>
               {errors.password && <div className="invalid-feedback d-block">{errors.password.message}</div>}
-            </div>
+            </div> : <div className="mb-4">
+              <label style={{ fontWeight: 600, fontSize: '0.875rem', color: '#1a1a2e', marginBottom: 6, display: 'block' }}>Verification code</label>
+              <input type="text" inputMode="numeric" maxLength={6} value={otp} onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))} placeholder="6-digit code" className="form-control" style={{ borderRadius: 10, border: '1.5px solid #e8e8f0', height: 46, letterSpacing: 4 }} required />
+              <small className="text-muted">Code sent to {otpEmail}</small>
+            </div>}
 
             <button
               type="submit"
@@ -105,7 +122,7 @@ const Login = () => {
               {loading ? (
                 <><div className="spinner-border spinner-border-sm" role="status" /><span>Signing in...</span></>
               ) : (
-                <><LogIn size={18} /> Sign In</>
+                <><LogIn size={18} /> {otpStep ? 'Verify and sign in' : 'Sign In'}</>
               )}
             </button>
           </form>

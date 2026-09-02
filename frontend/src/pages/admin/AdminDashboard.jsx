@@ -55,7 +55,9 @@ const AdminDashboard = () => {
               { label: 'Total Users', value: stats.totalUsers },
               { label: 'Total Events', value: stats.totalEvents },
               { label: 'Active Events', value: stats.activeEvents },
-              { label: 'Photos Stored', value: stats.totalPhotos },
+                { label: 'QR Codes Generated', value: stats.totalQrGenerated },
+                { label: 'QR Scans', value: stats.totalQrScans },
+                { label: 'Photos Stored', value: stats.totalPhotos },
             ].map((s, idx) => (
               <div key={idx} className="col-6 col-md-3">
                 <div className="bg-white border p-3 rounded-es text-center shadow-sm">

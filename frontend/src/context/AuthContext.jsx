@@ -33,6 +33,11 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     const res = await api.post('/auth/login', { email, password });
+    return res.data.data;
+  };
+
+  const verifyOtp = async (email, otp, purpose) => {
+    const res = await api.post('/auth/verify-otp', { email, otp, purpose });
     const { token: newToken, user: newUser } = res.data.data;
     localStorage.setItem('eventsnap_token', newToken);
     api.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
@@ -43,12 +48,7 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (name, email, password) => {
     const res = await api.post('/auth/register', { name, email, password });
-    const { token: newToken, user: newUser } = res.data.data;
-    localStorage.setItem('eventsnap_token', newToken);
-    api.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
-    setToken(newToken);
-    setUser(newUser);
-    return newUser;
+    return res.data.data;
   };
 
   const logout = () => {
@@ -60,7 +60,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, register, logout, updateUser }}>
+    <AuthContext.Provider value={{ user, token, loading, login, verifyOtp, register, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

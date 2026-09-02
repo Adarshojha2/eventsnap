@@ -3,19 +3,29 @@ import Event from '../models/Event.js';
 import Photo from '../models/Photo.js';
 import Video from '../models/Video.js';
 import Subscription from '../models/Subscription.js';
+import Analytics from '../models/Analytics.js';
 import { successResponse, errorResponse, paginatedResponse } from '../utils/apiResponse.js';
 
 // GET /api/admin/stats
 export const getAdminStats = async (req, res) => {
   try {
-    const [totalUsers, totalEvents, totalPhotos, totalVideos, activeEvents] = await Promise.all([
+    const [totalUsers, totalEvents, totalPhotos, totalVideos, activeEvents, qrScanTotals] = await Promise.all([
       User.countDocuments(),
       Event.countDocuments(),
       Photo.countDocuments(),
       Video.countDocuments(),
       Event.countDocuments({ isActive: true }),
+      Analytics.aggregate([{ $group: { _id: null, total: { $sum: '$qrScans' } } }]),
     ]);
-    return successResponse(res, { totalUsers, totalEvents, activeEvents, totalPhotos, totalVideos });
+    return successResponse(res, {
+      totalUsers,
+      totalEvents,
+      activeEvents,
+      totalPhotos,
+      totalVideos,
+      totalQrGenerated: totalEvents,
+      totalQrScans: qrScanTotals[0]?.total || 0,
+    });
   } catch (error) {
     return errorResponse(res, 'Failed to fetch stats.', 500);
   }
